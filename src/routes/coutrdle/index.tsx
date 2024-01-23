@@ -1,8 +1,10 @@
-import { component$, useSignal, useStore, useTask$ } from "@builder.io/qwik";
+import { component$, useStore, useTask$, $ } from "@builder.io/qwik";
 
 export default component$(() => {
-  const countriesStore = useStore<{ countries: Country[] }>({ countries: [] });
-  const countryToGuess = useSignal("");
+  const countriesStore = useStore<{
+    countries: Country[];
+    countryToGuess: Country | undefined;
+  }>({ countries: [], countryToGuess: undefined });
 
   type Country = {
     flags: {
@@ -27,6 +29,17 @@ export default component$(() => {
     population: number;
   };
 
+  const setNewCountryToGuess = $((excludedCountryCommonName: string) => {
+    const countries = countriesStore.countries.filter(
+      (country) => country.name.common !== excludedCountryCommonName
+    );
+
+    const randomCountry =
+      countries[Math.floor(Math.random() * countries.length)];
+
+    countriesStore.countryToGuess = randomCountry;
+  });
+
   useTask$(async ({ cleanup }) => {
     const abortController = new AbortController();
     cleanup(() => abortController.abort("cleanup"));
@@ -40,19 +53,14 @@ export default component$(() => {
     const data = await countries.json();
 
     countriesStore.countries = data as Country[];
+    setNewCountryToGuess("");
   });
 
   return (
     <>
       <div>
-        {countriesStore.countries.map((country) => {
-          return (
-            <div>
-              <img src={country.flags.png} width="50" height="50" />
-              {country.name.common}
-            </div>
-          );
-        })}
+        {countriesStore.countryToGuess &&
+          countriesStore.countryToGuess.name.common}
       </div>
     </>
   );

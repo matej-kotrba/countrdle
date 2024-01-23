@@ -13,5 +13,14 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
 };
 
 export default component$(() => {
-  return <Slot />;
+  return (
+    <>
+      <nav>
+        <img src="/imgs/logo.png" alt="Logo" />
+      </nav>
+      <main>
+        <Slot />
+      </main>
+    </>
+  );
 });
