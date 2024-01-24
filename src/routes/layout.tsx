@@ -15,10 +15,16 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
 export default component$(() => {
   return (
     <>
-      <nav>
-        <img src="/imgs/logo.png" alt="Logo" />
+      <nav class="w-full p-2 bg-slate-300">
+        <div class="aspect-square w-16 rounded-full overflow-hidden">
+          <img
+            src="/imgs/logo.png"
+            alt="Logo"
+            class="object-contain w-full h-full"
+          />
+        </div>
       </nav>
-      <main>
+      <main class="container mx-auto">
         <Slot />
       </main>
     </>
