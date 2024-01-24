@@ -1,4 +1,11 @@
-import { component$, useStore, useTask$, $, QRL } from "@builder.io/qwik";
+import {
+  component$,
+  useStore,
+  useTask$,
+  $,
+  QRL,
+  useSignal,
+} from "@builder.io/qwik";
 
 type Country = {
   capital: string[];
@@ -73,11 +80,21 @@ export default component$(() => {
     shCl.push(cluesInOrder[shCl.length]);
   };
 
+  const filterCountryList = $((search: string) => {
+    countriesStore.filteredCountries = countriesStore.countries
+      .filter((country) =>
+        country.name.common.toLowerCase().includes(search.toLowerCase())
+      )
+      .sort((a, b) => {
+        return a.name.common.localeCompare(b.name.common);
+      });
+  });
+
   useTask$(async ({ cleanup }) => {
     const abortController = new AbortController();
     cleanup(() => abortController.abort("cleanup"));
     const countries = await fetch(
-      "https://restcountries.com/v3.1/all?fields=name,flags,region,subregion,population,capitals,currencies,independent,landlocked,area,capital,languages",
+      "https://restcountries.com/v3.1/all?fields=name,flags,region,subregion,population,capitals,currencies,independent,landlocked,area,capital,languages,flag",
       {
         signal: abortController.signal,
       }
@@ -86,15 +103,8 @@ export default component$(() => {
     const data = await countries.json();
 
     countriesStore.countries = data as Country[];
-    countriesStore.filteredCountries = data as Country[];
+    filterCountryList("");
     setNewCountryToGuess("");
-  });
-
-  const filterCountryList = $((search: string) => {
-    countriesStore.filteredCountries = countriesStore.countries.filter(
-      (country) =>
-        country.name.common.toLowerCase().includes(search.toLowerCase())
-    );
   });
 
   return (
@@ -106,7 +116,6 @@ export default component$(() => {
         <CountryGuessArea
           countryFilteredList={countriesStore.filteredCountries}
           filterSearchCountries={filterCountryList}
-          searchQuery=""
         />
       </div>
       <div>
@@ -194,36 +203,52 @@ export default component$(() => {
 
 type CountryGuessAreaProps = {
   countryFilteredList: Country[];
-  searchQuery: string;
   filterSearchCountries: QRL<(search: string) => void>;
 };
 
 export const CountryGuessArea = component$(
-  ({
-    searchQuery,
-    countryFilteredList,
-    filterSearchCountries,
-  }: CountryGuessAreaProps) => {
+  ({ countryFilteredList, filterSearchCountries }: CountryGuessAreaProps) => {
+    const searchQuery = useSignal("");
+
     return (
-      <div>
-        <input
-          type="text"
-          value={searchQuery}
-          onInput$={(e) => {
-            const value = (e.target as HTMLInputElement).value;
-            if (typeof value === "string") {
-              filterSearchCountries(value);
-            }
-          }}
-          class="min-w-80 p-2 border-[1px] shadow-md border-solid border-slate-700 bg-slate-100 rounded-2xl"
-        />
-        <div class="flex flex-col">
-          {countryFilteredList.map((country) => {
+      <div class="relative group">
+        <div class="flex gap-1 relative">
+          <input
+            type="text"
+            value={searchQuery.value}
+            onInput$={(e) => {
+              const value = (e.target as HTMLInputElement).value;
+              if (typeof value === "string") {
+                filterSearchCountries(value);
+              }
+            }}
+            class="min-w-80 p-2 border-[1px] shadow-md border-solid border-slate-700 bg-slate-100 rounded-md outline-none focus:border-blue-400 duration-100"
+          />
+          <button
+            type="button"
+            class="rounded-lg p-2 bg-slate-200 hover:bg-blue-200 duration-100 h-full grid place-content-center border-[1px] border-black border-solid"
+          >
+            <iconify-icon
+              icon="mynaui:send"
+              class="text-3xl text-black"
+            ></iconify-icon>
+          </button>
+        </div>
+        <div
+          class="flex flex-col absolute left-1/2 top-12 -translate-x-1/2 w-full duration-150 opacity-0
+         pointer-events-none group-focus-within:opacity-100 group-focus-within:pointer-events-auto
+         bg-slate-50 rounded-md"
+        >
+          {[...countryFilteredList].splice(0, 8).map((country) => {
             return (
               <button
                 key={country.name.official}
                 type="button"
-                class="w-full px-2 py-2"
+                class="w-full px-2 py-2 hover:bg-slate-200 rounded-md duration-100 overflow-hidden text-ellipsis whitespace-nowrap"
+                onClick$={() => {
+                  searchQuery.value = country.name.common;
+                  filterSearchCountries(country.name.common);
+                }}
               >
                 {country.flag} {country.name.common}
               </button>
