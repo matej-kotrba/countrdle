@@ -63,15 +63,15 @@ export default component$(() => {
   });
 
   const showNextClue = $(() => {
+    console.log(countriesStore.countryToGuess);
     const cluesInOrder: (keyof Country)[] = [
       "area",
       "population",
-      "independent",
       "landlocked",
-      "borders",
       "region",
       "languages",
       "capital",
+      "borders",
       "flags",
     ];
 
@@ -185,6 +185,7 @@ export default component$(() => {
             ? countriesStore.countryToGuess?.area
             : "?"}
         </span>
+        <span> km2</span>
       </div>
       <div>
         <span>The population of the country is: </span>
@@ -195,26 +196,12 @@ export default component$(() => {
         </span>
       </div>
       <div>
-        <span>Is the country independent: </span>
-        <span class="font-bold text-xl">
-          {countriesStore.showedClues.includes("independent")
-            ? countriesStore.countryToGuess?.independent
-            : "?"}
-        </span>
-      </div>
-      <div>
-        <span>Is country landblocked: </span>
+        <span>Is country landlocked: </span>
         <span class="font-bold text-xl">
           {countriesStore.showedClues.includes("landlocked")
             ? countriesStore.countryToGuess?.landlocked
-            : "?"}
-        </span>
-      </div>
-      <div>
-        <span>Country borders with: </span>
-        <span class="font-bold text-xl">
-          {countriesStore.showedClues.includes("borders")
-            ? countriesStore.countryToGuess?.borders.join(", ")
+              ? "Yes"
+              : "No"
             : "?"}
         </span>
       </div>
@@ -240,6 +227,14 @@ export default component$(() => {
         <span class="font-bold text-xl">
           {countriesStore.showedClues.includes("capital")
             ? countriesStore.countryToGuess?.capital
+            : "?"}
+        </span>
+      </div>
+      <div>
+        <span>Country borders with: </span>
+        <span class="font-bold text-xl">
+          {countriesStore.showedClues.includes("borders")
+            ? countriesStore.countryToGuess?.borders.join(", ")
             : "?"}
         </span>
       </div>
@@ -291,6 +286,7 @@ export const CountryGuessArea = component$(
               if (e.key === "Enter") {
                 hideDropdown.value = true;
                 onSubmit(searchQuery.value);
+                (e.target as HTMLInputElement).value = "";
               }
             }}
             onInput$={(e) => {
@@ -309,6 +305,7 @@ export const CountryGuessArea = component$(
             onClick$={(e) => {
               hideDropdown.value = true;
               onSubmit(searchQuery.value);
+              (e.target as HTMLInputElement).value = "";
               e.stopPropagation();
             }}
           >
@@ -329,7 +326,7 @@ export const CountryGuessArea = component$(
                 key={country.name.official}
                 type="button"
                 class="w-full px-2 py-2 hover:bg-slate-200 rounded-md duration-100 overflow-hidden text-ellipsis whitespace-nowrap"
-                onClick$={() => {
+                onClick$={(e) => {
                   searchQuery.value = country.name.common;
                   filterSearchCountries(country.name.common);
                 }}
