@@ -9,6 +9,7 @@ import {
 } from "@builder.io/qwik";
 
 import styles from "./styles.css";
+import Box from "~/components/containers/Box";
 
 type Country = {
   capital: string[];
@@ -269,7 +270,206 @@ export default component$(() => {
       <h3 class="text-center text-4xl uppercase font-bold tracking-widest mb-12">
         Countrdle
       </h3>
-      <div class="flex flex-col items-center max-w-96 mx-auto">
+
+      <div class="grid xl:grid-cols-6 2xl:grid-cols-7 gap-2">
+        <Box
+          title="Size"
+          onHoverTitle="The size of the country in km²"
+          value={
+            countriesStore.showedClues.includes("area")
+              ? String(countriesStore.countryToGuess?.area) + " km²"
+              : "?"
+          }
+        >
+          <iconify-icon
+            icon="fluent:slide-size-24-regular"
+            slot="icon"
+            class="text-8xl"
+          ></iconify-icon>
+        </Box>
+        <Box
+          title="Population"
+          onHoverTitle="The population of the country"
+          value={
+            countriesStore.showedClues.includes("population")
+              ? String(countriesStore.countryToGuess?.population)
+              : "?"
+          }
+        >
+          <iconify-icon
+            icon="ic:round-group"
+            slot="icon"
+            class="text-8xl"
+          ></iconify-icon>
+        </Box>
+        <Box
+          title="Landlocked"
+          onHoverTitle="Is country landlocked?"
+          value={
+            countriesStore.showedClues.includes("landlocked")
+              ? countriesStore.countryToGuess?.landlocked
+                ? "Yes"
+                : "No"
+              : "?"
+          }
+        >
+          <iconify-icon
+            icon="carbon:locked"
+            slot="icon"
+            class="text-8xl"
+          ></iconify-icon>
+        </Box>
+        <Box
+          title="Region"
+          onHoverTitle="Region of the country"
+          value={
+            countriesStore.showedClues.includes("region")
+              ? countriesStore.countryToGuess?.region
+              : "?"
+          }
+        >
+          <iconify-icon
+            icon="ic:round-landscape"
+            slot="icon"
+            class="text-8xl"
+          ></iconify-icon>
+        </Box>
+        <Box
+          title="Languages"
+          onHoverTitle="Languages of the country"
+          value={
+            countriesStore.showedClues.includes("languages") &&
+            countriesStore.countryToGuess?.languages
+              ? Object.values(countriesStore.countryToGuess.languages).join(
+                  ", "
+                )
+              : "?"
+          }
+        >
+          <iconify-icon
+            icon="ion:language"
+            slot="icon"
+            class="text-8xl"
+          ></iconify-icon>
+        </Box>
+        <Box
+          title="Capital"
+          onHoverTitle="Capital of the country"
+          value={
+            countriesStore.showedClues.includes("capital")
+              ? String(countriesStore.countryToGuess?.capital)
+              : "?"
+          }
+        >
+          <iconify-icon
+            icon="solar:city-bold"
+            slot="icon"
+            class="text-8xl"
+          ></iconify-icon>
+        </Box>
+        <Box
+          title="Borders"
+          onHoverTitle="Countries of the this country borders with"
+          value={
+            countriesStore.showedClues.includes("borders")
+              ? countriesStore.countryToGuess?.borders.join(", ")
+              : "?"
+          }
+        >
+          <iconify-icon
+            icon="fluent:border-all-20-regular"
+            slot="icon"
+            class="text-8xl"
+          ></iconify-icon>
+        </Box>
+        <Box title="Country flag" onHoverTitle="Flag of the country" value={""}>
+          {countriesStore.showedClues.includes("flags") ? (
+            <img
+              src={countriesStore.countryToGuess?.flags.png}
+              alt="Country flag"
+              width={450}
+              height={300}
+            />
+          ) : (
+            <div class="w-full aspect-square rounded-sm bg-slate-300"></div>
+          )}
+        </Box>
+      </div>
+      {/* <div>
+        <span>The size of the country is: </span>
+        <span class="font-bold text-xl">
+          {countriesStore.showedClues.includes("area")
+            ? countriesStore.countryToGuess?.area
+            : "?"}
+        </span>
+        <span> km2</span>
+      </div> */}
+      {/* <div>
+        <span>The population of the country is: </span>
+        <span class="font-bold text-xl">
+          {countriesStore.showedClues.includes("population")
+            ? countriesStore.countryToGuess?.population
+            : "?"}
+        </span>
+      </div> */}
+      {/* <div>
+        <span>Is country landlocked: </span>
+        <span class="font-bold text-xl">
+          {countriesStore.showedClues.includes("landlocked")
+            ? countriesStore.countryToGuess?.landlocked
+              ? "Yes"
+              : "No"
+            : "?"}
+        </span>
+      </div> */}
+      {/* <div>
+        <span>Country region: </span>
+        <span class="font-bold text-xl">
+          {countriesStore.showedClues.includes("region")
+            ? countriesStore.countryToGuess?.region
+            : "?"}
+        </span>
+      </div> */}
+      {/* <div>
+        <span>Country languages: </span>
+        <span class="font-bold text-xl">
+          {countriesStore.showedClues.includes("languages") &&
+          countriesStore.countryToGuess?.languages
+            ? Object.values(countriesStore.countryToGuess.languages).join(", ")
+            : "?"}
+        </span>
+      </div> */}
+      {/* <div>
+        <span>Country capital: </span>
+        <span class="font-bold text-xl">
+          {countriesStore.showedClues.includes("capital")
+            ? countriesStore.countryToGuess?.capital
+            : "?"}
+        </span>
+      </div> */}
+      {/* <div>
+        <span>Country borders with: </span>
+        <span class="font-bold text-xl">
+          {countriesStore.showedClues.includes("borders")
+            ? countriesStore.countryToGuess?.borders.join(", ")
+            : "?"}
+        </span>
+      </div> */}
+      {/* <div>
+        <span>Country flag: </span>
+
+        {countriesStore.showedClues.includes("flags") ? (
+          <img
+            src={countriesStore.countryToGuess?.flags.png}
+            alt="Country flag"
+            width={450}
+            height={300}
+          />
+        ) : (
+          <div class="w-[450px] h-[300px] rounded-sm bg-slate-300"></div>
+        )}
+      </div> */}
+      <div class="flex flex-col items-center max-w-96 mx-auto mt-2">
         <CountryGuessArea
           countryFilteredList={countriesStore.filteredCountries}
           filterSearchCountries={filterCountryList}
@@ -280,12 +480,12 @@ export default component$(() => {
             return (
               <div
                 key={country.name.common}
-                class="grid w-full text-lg py-2 bg-slate-100 rounded-md text-center gird__container"
+                class="grid w-full text-lg py-2 bg-slate-100 rounded-md text-center gird__container px-2"
               >
-                <span>
+                <span class="text-left">
                   {country.flag} {country.name.common}{" "}
                 </span>
-                <span>
+                <span class="text-left">
                   {countriesStore.countryToGuess
                     ? getCountryDirection(
                         country,
@@ -300,86 +500,13 @@ export default component$(() => {
                         country.latlng[0],
                         country.latlng[1]
                       )
-                    : ""}
+                    : ""}{" "}
+                  km
                 </span>
               </div>
             );
           })}
         </div>
-      </div>
-      <div>
-        <span>The size of the country is: </span>
-        <span class="font-bold text-xl">
-          {countriesStore.showedClues.includes("area")
-            ? countriesStore.countryToGuess?.area
-            : "?"}
-        </span>
-        <span> km2</span>
-      </div>
-      <div>
-        <span>The population of the country is: </span>
-        <span class="font-bold text-xl">
-          {countriesStore.showedClues.includes("population")
-            ? countriesStore.countryToGuess?.population
-            : "?"}
-        </span>
-      </div>
-      <div>
-        <span>Is country landlocked: </span>
-        <span class="font-bold text-xl">
-          {countriesStore.showedClues.includes("landlocked")
-            ? countriesStore.countryToGuess?.landlocked
-              ? "Yes"
-              : "No"
-            : "?"}
-        </span>
-      </div>
-      <div>
-        <span>Country region: </span>
-        <span class="font-bold text-xl">
-          {countriesStore.showedClues.includes("region")
-            ? countriesStore.countryToGuess?.region
-            : "?"}
-        </span>
-      </div>
-      <div>
-        <span>Country languages: </span>
-        <span class="font-bold text-xl">
-          {countriesStore.showedClues.includes("languages") &&
-          countriesStore.countryToGuess?.languages
-            ? Object.values(countriesStore.countryToGuess.languages).join(", ")
-            : "?"}
-        </span>
-      </div>
-      <div>
-        <span>Country capital: </span>
-        <span class="font-bold text-xl">
-          {countriesStore.showedClues.includes("capital")
-            ? countriesStore.countryToGuess?.capital
-            : "?"}
-        </span>
-      </div>
-      <div>
-        <span>Country borders with: </span>
-        <span class="font-bold text-xl">
-          {countriesStore.showedClues.includes("borders")
-            ? countriesStore.countryToGuess?.borders.join(", ")
-            : "?"}
-        </span>
-      </div>
-      <div>
-        <span>Country flag: </span>
-
-        {countriesStore.showedClues.includes("flags") ? (
-          <img
-            src={countriesStore.countryToGuess?.flags.png}
-            alt="Country flag"
-            width={450}
-            height={300}
-          />
-        ) : (
-          <div class="w-[450px] h-[300px] rounded-sm bg-slate-300"></div>
-        )}
       </div>
     </>
   );
