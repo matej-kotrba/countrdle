@@ -3,9 +3,12 @@ import {
   useStore,
   useTask$,
   $,
-  QRL,
+  type QRL,
   useSignal,
+  useStylesScoped$,
 } from "@builder.io/qwik";
+
+import styles from "./styles.css";
 
 type Country = {
   capital: string[];
@@ -34,9 +37,15 @@ type Country = {
   landlocked: boolean;
   area: number;
   population: number;
+  latlng: {
+    0: number;
+    1: number;
+  };
 };
 
 export default component$(() => {
+  // @ts-ignore
+  useStylesScoped$(styles);
   const countriesStore = useStore<{
     countries: Country[];
     filteredCountries: Country[];
@@ -108,15 +117,11 @@ export default component$(() => {
       (country) => country.name.common
     );
 
-    console.log(usedCountriesNames);
-
     const country = countriesStore.countries
       .filter((country) => !usedCountriesNames.includes(country.name.common))
       .find((item) =>
         item.name.common.toLowerCase().includes(query.toLowerCase())
       );
-
-    console.log(country?.name.common);
 
     if (
       !country ||
@@ -135,11 +140,116 @@ export default component$(() => {
     }
   });
 
+  const getCountryDirection = $(
+    (
+      state: any,
+      correctCountry: Country["latlng"],
+      country: Country["latlng"]
+    ) => {
+      const { 0: lat1, 1: lng1 } = correctCountry;
+      const { 0: lat2, 1: lng2 } = country;
+
+      const tolerance = 4;
+
+      // Calculate the difference and create an arrow icon depending on it
+      const latDiff = lat1 - lat2;
+      const lngDiff = lng1 - lng2;
+
+      const data = {
+        up: "⬆️",
+        leftup: "↖️",
+        rightup: "↗️",
+        down: "⬇️",
+        leftdown: "↙️",
+        rightdown: "↘️",
+        left: "⬅️",
+        right: "➡️",
+      };
+
+      let isTop = false;
+      let isLeft = false;
+      let isTween = false;
+      let nonTweenDirection: "width" | "height" = "width";
+
+      console.log(state.name.common, "latDiff", latDiff, "lngDiff", lngDiff);
+      if (lngDiff < 0) {
+        isLeft = true;
+      }
+      if (latDiff > 0) {
+        isTop = true;
+      }
+      if (Math.abs(latDiff) <= tolerance && Math.abs(lngDiff) <= tolerance) {
+        isTween = true;
+      } else if (
+        Math.abs(latDiff) > tolerance &&
+        Math.abs(lngDiff) > tolerance
+      ) {
+        isTween = true;
+      } else if (Math.abs(lngDiff) > tolerance) {
+        nonTweenDirection = "width";
+      } else {
+        nonTweenDirection = "height";
+      }
+
+      if (isTop && isLeft && isTween) {
+        return data.leftup;
+      }
+      if (isTop && isLeft && !isTween) {
+        return nonTweenDirection === "width" ? data.left : data.up;
+      }
+      if (isTop && !isLeft && isTween) {
+        return data.rightup;
+      }
+      if (isTop && !isLeft && !isTween) {
+        return nonTweenDirection === "width" ? data.right : data.up;
+      }
+      if (!isTop && isLeft && isTween) {
+        return data.leftdown;
+      }
+      if (!isTop && isLeft && !isTween) {
+        return nonTweenDirection === "width" ? data.left : data.down;
+      }
+      if (!isTop && !isLeft && isTween) {
+        return data.rightdown;
+      }
+      if (!isTop && !isLeft && !isTween) {
+        return nonTweenDirection === "width" ? data.right : data.down;
+      }
+    }
+  );
+
+  const getCountryDistance = $(
+    (lat1: number, lon1: number, lat2: number, lon2: number) => {
+      const R: number = 6371.0;
+
+      const toRadians = (degree: number) => degree * (Math.PI / 180);
+      lat1 = toRadians(lat1);
+      lon1 = toRadians(lon1);
+      lat2 = toRadians(lat2);
+      lon2 = toRadians(lon2);
+
+      // Differences in coordinates
+      const dlat: number = lat2 - lat1;
+      const dlon: number = lon2 - lon1;
+
+      // Haversine formula
+      const a: number =
+        Math.sin(dlat / 2) ** 2 +
+        Math.cos(lat1) * Math.cos(lat2) * Math.sin(dlon / 2) ** 2;
+      const c: number = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+      // Calculate the distance
+      const distance: number = R * c;
+
+      return distance.toFixed(0);
+    }
+  );
+
   useTask$(async ({ cleanup }) => {
     const abortController = new AbortController();
     cleanup(() => abortController.abort("cleanup"));
     const countries = await fetch(
-      "https://restcountries.com/v3.1/all?fields=name,flags,region,subregion,population,capitals,currencies,independent,landlocked,area,capital,languages,flag,borders",
+      "https://restcountries.com/v3.1/all?fields=name,flags,region,subregion,population,capitals,currencies,independent,landlocked,area,capital,languages,flag,borders,latlng",
       {
         signal: abortController.signal,
       }
@@ -168,12 +278,31 @@ export default component$(() => {
         <div class="flex flex-col gap-1 w-full mt-2">
           {countriesStore.guessedCountries.map((country) => {
             return (
-              <span
+              <div
                 key={country.name.common}
-                class="inline-block w-full text-lg py-2 bg-slate-100 rounded-md text-center"
+                class="grid w-full text-lg py-2 bg-slate-100 rounded-md text-center gird__container"
               >
-                {country.flag} {country.name.common}
-              </span>
+                <span>
+                  {country.flag} {country.name.common}{" "}
+                </span>
+                <span>
+                  {countriesStore.countryToGuess
+                    ? getCountryDirection(
+                        country,
+                        countriesStore.countryToGuess.latlng,
+                        country.latlng
+                      )
+                    : ""}
+                  {countriesStore.countryToGuess
+                    ? getCountryDistance(
+                        countriesStore.countryToGuess.latlng[0],
+                        countriesStore.countryToGuess.latlng[1],
+                        country.latlng[0],
+                        country.latlng[1]
+                      )
+                    : ""}
+                </span>
+              </div>
             );
           })}
         </div>
@@ -331,7 +460,7 @@ export const CountryGuessArea = component$(
                   filterSearchCountries(country.name.common);
                 }}
               >
-                {country.flag} {country.name.common}
+                {country.flag} {country.name.common}{" "}
               </button>
             );
           })}
