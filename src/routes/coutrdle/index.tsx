@@ -56,7 +56,7 @@ export default component$(() => {
   }>({
     countries: [],
     countryToGuess: undefined,
-    showedClues: [],
+    showedClues: ["area"],
     filteredCountries: [],
     guessedCountries: [],
   });
@@ -73,7 +73,6 @@ export default component$(() => {
   });
 
   const showNextClue = $(() => {
-    console.log(countriesStore.countryToGuess);
     const cluesInOrder: (keyof Country)[] = [
       "area",
       "population",
@@ -172,7 +171,6 @@ export default component$(() => {
       let isTween = false;
       let nonTweenDirection: "width" | "height" = "width";
 
-      console.log(state.name.common, "latDiff", latDiff, "lngDiff", lngDiff);
       if (lngDiff < 0) {
         isLeft = true;
       }
@@ -371,8 +369,11 @@ export default component$(() => {
           title="Borders"
           onHoverTitle="Countries of the this country borders with"
           value={
-            countriesStore.showedClues.includes("borders")
-              ? countriesStore.countryToGuess?.borders.join(", ")
+            countriesStore.showedClues.includes("borders") &&
+            countriesStore.countryToGuess?.borders
+              ? countriesStore.countryToGuess.borders.length > 0
+                ? countriesStore.countryToGuess.borders.join(", ")
+                : "None"
               : "?"
           }
         >
@@ -526,6 +527,7 @@ export const CountryGuessArea = component$(
   }: CountryGuessAreaProps) => {
     const searchQuery = useSignal("");
     const hideDropdown = useSignal(true);
+    const arrowSelectedCountry = useSignal(0);
 
     return (
       <div class="relative group w-full">
