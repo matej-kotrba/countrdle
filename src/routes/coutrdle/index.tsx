@@ -529,9 +529,24 @@ export const CountryGuessArea = component$(
     filterSearchCountries,
     onSubmit,
   }: CountryGuessAreaProps) => {
+    const FILTERED_LIST_DISPLAY_LENGTH = 8;
+
     const searchQuery = useSignal("");
     const hideDropdown = useSignal(true);
     const arrowSelectedCountry = useSignal(0);
+
+    const changeSelectedCountry = $((value: number) => {
+      if (arrowSelectedCountry.value + value < 0) return;
+      if (arrowSelectedCountry.value + value >= FILTERED_LIST_DISPLAY_LENGTH)
+        return;
+      arrowSelectedCountry.value += value;
+    });
+
+    const submit = $((e: Event) => {
+      onSubmit(countryFilteredList[arrowSelectedCountry.value].name.common);
+      arrowSelectedCountry.value = 0;
+      (e.target as HTMLInputElement).value = "";
+    });
 
     return (
       <div class="relative group w-full">
@@ -547,8 +562,13 @@ export const CountryGuessArea = component$(
             onKeyDown$={(e) => {
               if (e.key === "Enter") {
                 hideDropdown.value = true;
-                onSubmit(searchQuery.value);
-                (e.target as HTMLInputElement).value = "";
+                submit(e);
+              }
+              if (e.key === "ArrowDown") {
+                changeSelectedCountry(1);
+              }
+              if (e.key === "ArrowUp") {
+                changeSelectedCountry(-1);
               }
             }}
             onInput$={(e) => {
@@ -566,8 +586,7 @@ export const CountryGuessArea = component$(
             class="rounded-lg p-2 bg-slate-200 hover:bg-blue-200 duration-100 h-full grid place-content-center border-[1px] border-black border-solid"
             onClick$={(e) => {
               hideDropdown.value = true;
-              onSubmit(searchQuery.value);
-              (e.target as HTMLInputElement).value = "";
+              submit(e);
               e.stopPropagation();
             }}
           >
@@ -582,21 +601,24 @@ export const CountryGuessArea = component$(
          pointer-events-none ${hideDropdown.value ? "" : "group-focus-within:opacity-100 group-focus-within:pointer-events-auto"}
          bg-slate-50 rounded-md`}
         >
-          {[...countryFilteredList].splice(0, 8).map((country) => {
-            return (
-              <button
-                key={country.name.official}
-                type="button"
-                class="w-full px-2 py-2 hover:bg-slate-200 rounded-md duration-100 overflow-hidden text-ellipsis whitespace-nowrap"
-                onClick$={(e) => {
-                  searchQuery.value = country.name.common;
-                  filterSearchCountries(country.name.common);
-                }}
-              >
-                {country.flag} {country.name.common}{" "}
-              </button>
-            );
-          })}
+          {[...countryFilteredList]
+            .splice(0, FILTERED_LIST_DISPLAY_LENGTH)
+            .map((country, index) => {
+              return (
+                <button
+                  key={country.name.official}
+                  type="button"
+                  class={`w-full px-2 py-2 hover:bg-slate-200 rounded-md duration-100 overflow-hidden text-ellipsis whitespace-nowrap
+                  ${index === arrowSelectedCountry.value ? "bg-slate-200" : ""}`}
+                  onClick$={(e) => {
+                    searchQuery.value = country.name.common;
+                    filterSearchCountries(country.name.common);
+                  }}
+                >
+                  {country.flag} {country.name.common}
+                </button>
+              );
+            })}
         </div>
       </div>
     );
