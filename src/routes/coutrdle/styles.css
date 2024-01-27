@@ -1,3 +1,13 @@
 .gird__container {
   grid-template-columns: 1fr minmax(auto, 120px);
 }
+
+.grid_clues {
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+}
+
+@media (max-width: 554px) {
+  .grid_clues {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+}

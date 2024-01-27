@@ -268,8 +268,9 @@ export default component$(() => {
       <h3 class="text-center text-4xl uppercase font-bold tracking-widest mb-12">
         Countrdle
       </h3>
-
-      <div class="grid xl:grid-cols-6 2xl:grid-cols-7 gap-2">
+      {/* xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7
+      2xl:grid-cols-8 */}
+      <div class="grid grid_clues gap-2">
         <Box
           title="Size"
           onHoverTitle="The size of the country in km²"
@@ -282,7 +283,7 @@ export default component$(() => {
           <iconify-icon
             icon="fluent:slide-size-24-regular"
             slot="icon"
-            class="text-8xl"
+            class="text-5xl xs:text-8xl"
           ></iconify-icon>
         </Box>
         <Box
@@ -297,7 +298,7 @@ export default component$(() => {
           <iconify-icon
             icon="ic:round-group"
             slot="icon"
-            class="text-8xl"
+            class="text-5xl xs:text-8xl"
           ></iconify-icon>
         </Box>
         <Box
@@ -314,7 +315,7 @@ export default component$(() => {
           <iconify-icon
             icon="carbon:locked"
             slot="icon"
-            class="text-8xl"
+            class="text-5xl xs:text-8xl"
           ></iconify-icon>
         </Box>
         <Box
@@ -329,7 +330,7 @@ export default component$(() => {
           <iconify-icon
             icon="ic:round-landscape"
             slot="icon"
-            class="text-8xl"
+            class="text-5xl xs:text-8xl"
           ></iconify-icon>
         </Box>
         <Box
@@ -347,7 +348,7 @@ export default component$(() => {
           <iconify-icon
             icon="ion:language"
             slot="icon"
-            class="text-8xl"
+            class="text-5xl xs:text-8xl"
           ></iconify-icon>
         </Box>
         <Box
@@ -362,7 +363,7 @@ export default component$(() => {
           <iconify-icon
             icon="solar:city-bold"
             slot="icon"
-            class="text-8xl"
+            class="text-5xl xs:text-8xl"
           ></iconify-icon>
         </Box>
         <Box
@@ -380,7 +381,7 @@ export default component$(() => {
           <iconify-icon
             icon="fluent:border-all-20-regular"
             slot="icon"
-            class="text-8xl"
+            class="text-5xl xs:text-8xl"
           ></iconify-icon>
         </Box>
         <Box title="Country flag" onHoverTitle="Flag of the country" value={""}>
@@ -476,34 +477,37 @@ export default component$(() => {
           filterSearchCountries={filterCountryList}
           onSubmit={guessCountry}
         />
-        <div class="flex flex-col gap-1 w-full mt-2">
+        <div class="flex flex-col gap-1 w-full mt-2 overflow-hidden">
           {countriesStore.guessedCountries.map((country) => {
             return (
               <div
                 key={country.name.common}
-                class="grid w-full text-lg py-2 bg-slate-100 rounded-md text-center gird__container px-2"
+                class={`grid w-full text-lg py-2 ${country.name.common === countriesStore.countryToGuess?.name.common ? "bg-yellow-300" : "bg-slate-100"} rounded-md text-center gird__container px-2`}
               >
-                <span class="text-left">
+                <span class="text-left overflow-hidden inline-block text-ellipsis whitespace-nowrap">
                   {country.flag} {country.name.common}{" "}
                 </span>
-                <span class="text-left">
-                  {countriesStore.countryToGuess
-                    ? getCountryDirection(
-                        country,
-                        countriesStore.countryToGuess.latlng,
-                        country.latlng
-                      )
-                    : ""}
-                  {countriesStore.countryToGuess
-                    ? getCountryDistance(
-                        countriesStore.countryToGuess.latlng[0],
-                        countriesStore.countryToGuess.latlng[1],
-                        country.latlng[0],
-                        country.latlng[1]
-                      )
-                    : ""}{" "}
-                  km
-                </span>
+                {country.name.common !==
+                  countriesStore.countryToGuess?.name.common && (
+                  <span class="text-left">
+                    {countriesStore.countryToGuess
+                      ? getCountryDirection(
+                          country,
+                          countriesStore.countryToGuess.latlng,
+                          country.latlng
+                        )
+                      : ""}
+                    {countriesStore.countryToGuess
+                      ? getCountryDistance(
+                          countriesStore.countryToGuess.latlng[0],
+                          countriesStore.countryToGuess.latlng[1],
+                          country.latlng[0],
+                          country.latlng[1]
+                        )
+                      : ""}{" "}
+                    km
+                  </span>
+                )}
               </div>
             );
           })}
