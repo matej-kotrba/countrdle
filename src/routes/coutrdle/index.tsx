@@ -10,6 +10,7 @@ import {
 
 import styles from "./styles.css";
 import Box from "~/components/containers/Box";
+import Cover from "~/components/other/Cover";
 
 type Country = {
   capital: string[];
@@ -141,11 +142,7 @@ export default component$(() => {
   });
 
   const getCountryDirection = $(
-    (
-      state: any,
-      correctCountry: Country["latlng"],
-      country: Country["latlng"]
-    ) => {
+    (correctCountry: Country["latlng"], country: Country["latlng"]) => {
       const { 0: lat1, 1: lng1 } = correctCountry;
       const { 0: lat2, 1: lng2 } = country;
 
@@ -265,6 +262,7 @@ export default component$(() => {
 
   return (
     <>
+      <Cover tryCount={countriesStore.guessedCountries.length} show={true} />
       <h3 class="text-center text-4xl uppercase font-bold tracking-widest mb-12">
         Countrdle
       </h3>
@@ -492,7 +490,6 @@ export default component$(() => {
                   <span class="text-left">
                     {countriesStore.countryToGuess
                       ? getCountryDirection(
-                          country,
                           countriesStore.countryToGuess.latlng,
                           country.latlng
                         )
