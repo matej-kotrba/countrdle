@@ -16,7 +16,7 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
 export default component$(() => {
   return (
     <>
-      <nav class="w-full p-2 bg-slate-300">
+      <nav class="w-full p-2">
         <div class="aspect-square w-16 rounded-full overflow-hidden">
           <img
             src={Logo}
