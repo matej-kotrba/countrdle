@@ -54,12 +54,14 @@ export default component$(() => {
     countryToGuess: Country | undefined;
     showedClues: (keyof Country)[];
     guessedCountries: Country[];
+    guessedCorrectly: boolean;
   }>({
     countries: [],
     countryToGuess: undefined,
     showedClues: ["area"],
     filteredCountries: [],
     guessedCountries: [],
+    guessedCorrectly: false,
   });
 
   const setNewCountryToGuess = $((excludedCountryCommonName: string) => {
@@ -135,7 +137,7 @@ export default component$(() => {
     countriesStore.guessedCountries.push(country);
     const result = await isCountryGuessed(country);
     if (result) {
-      alert("You guessed the country!");
+      countriesStore.guessedCorrectly = true;
     } else {
       showNextClue();
     }
@@ -241,6 +243,16 @@ export default component$(() => {
     }
   );
 
+  const onRestart = $(() => {
+    const newCountry =
+      countriesStore.countries[
+        Math.floor(Math.random() * (countriesStore.countries.length - 1))
+      ];
+    countriesStore.guessedCountries = [];
+    countriesStore.countryToGuess = newCountry;
+    countriesStore.guessedCorrectly = false;
+  });
+
   useTask$(async ({ cleanup }) => {
     const abortController = new AbortController();
     cleanup(() => abortController.abort("cleanup"));
@@ -262,7 +274,20 @@ export default component$(() => {
 
   return (
     <>
-      <Cover tryCount={countriesStore.guessedCountries.length} show={true} />
+      <Cover
+        tryCount={countriesStore.guessedCountries.length}
+        show={countriesStore.guessedCorrectly}
+        onRestart={onRestart}
+        countryName={
+          countriesStore.guessedCountries
+            .map((item) => item.name.common)
+            .includes(countriesStore.countryToGuess?.name.common || "")
+            ? countriesStore.countryToGuess?.flag +
+                " " +
+                countriesStore.countryToGuess?.name.common || ""
+            : ""
+        }
+      />
       <h3 class="text-center text-4xl uppercase font-bold tracking-widest mb-12">
         Countrdle
       </h3>
@@ -465,10 +490,15 @@ export const CountryGuessArea = component$(
       arrowSelectedCountry.value += value;
     });
 
-    const submit = $((e: Event) => {
-      onSubmit(countryFilteredList[arrowSelectedCountry.value].name.common);
+    const submit = $((e: Event, specificQuery?: string) => {
+      if (specificQuery) {
+        onSubmit(specificQuery);
+      } else {
+        onSubmit(countryFilteredList[arrowSelectedCountry.value].name.common);
+      }
       arrowSelectedCountry.value = 0;
       (e.target as HTMLInputElement).value = "";
+      searchQuery.value = "";
     });
 
     return (
@@ -509,7 +539,7 @@ export const CountryGuessArea = component$(
             class="rounded-lg p-2 bg-slate-200 hover:bg-blue-200 duration-100 h-full grid place-content-center border-[1px] border-black border-solid"
             onClick$={(e) => {
               hideDropdown.value = true;
-              submit(e);
+              submit(e, searchQuery.value);
               e.stopPropagation();
             }}
           >
