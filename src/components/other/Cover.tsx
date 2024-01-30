@@ -4,7 +4,6 @@ import {
   useSignal,
   useStylesScoped$,
 } from "@builder.io/qwik";
-import CoverCSS from "./cover.css";
 
 type Props = {
   show: boolean;
@@ -16,7 +15,7 @@ type Props = {
 export default component$(
   ({ show, tryCount, countryName, onRestart }: Props) => {
     //@ts-ignore
-    useStylesScoped$(CoverCSS);
+    useStylesScoped$(styles);
 
     const dialogRef = useSignal<HTMLDivElement>();
 
@@ -50,3 +49,12 @@ export default component$(
     );
   }
 );
+
+const styles = `
+  .dialog {
+  width: min(90vw, 600px);
+  aspect-ratio: 3/2;
+
+  transition: pointer-events 0s;
+}
+`;

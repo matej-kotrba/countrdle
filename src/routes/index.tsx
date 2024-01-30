@@ -8,10 +8,10 @@ import {
   useStylesScoped$,
 } from "@builder.io/qwik";
 
-import styles from "./styles.css";
+import styles from "./styles.module.css";
 import Box from "~/components/containers/Box";
 import Cover from "~/components/other/Cover";
-import { DocumentHead } from "@builder.io/qwik-city";
+import type { DocumentHead } from "@builder.io/qwik-city";
 
 type Country = {
   capital: string[];

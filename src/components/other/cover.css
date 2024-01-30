@@ -1,6 +1,0 @@
-.dialog {
-  width: min(90vw, 600px);
-  aspect-ratio: 3/2;
-
-  transition: pointer-events 0s;
-}
