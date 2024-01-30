@@ -1,6 +1,5 @@
 import { component$, Slot } from "@builder.io/qwik";
 import type { RequestHandler } from "@builder.io/qwik-city";
-import Logo from "/imgs/logo.png";
 import "@fontsource-variable/comfortaa/wght.css";
 
 export const onGet: RequestHandler = async ({ cacheControl }) => {
@@ -17,17 +16,6 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
 export default component$(() => {
   return (
     <>
-      <nav class="w-full p-2">
-        <div class="aspect-square w-16 rounded-full overflow-hidden">
-          <img
-            src={Logo}
-            width={100}
-            height={100}
-            alt="Logo"
-            class="object-contain w-full h-full"
-          />
-        </div>
-      </nav>
       <main class="container mx-auto">
         <Slot />
       </main>
