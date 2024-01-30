@@ -8,7 +8,7 @@ import {
   useStylesScoped$,
 } from "@builder.io/qwik";
 
-import styles from "./styles.module.css";
+import styles from "./styles.css?inline";
 import Box from "~/components/containers/Box";
 import Cover from "~/components/other/Cover";
 import type { DocumentHead } from "@builder.io/qwik-city";

@@ -4,6 +4,7 @@ import {
   useSignal,
   useStylesScoped$,
 } from "@builder.io/qwik";
+import styles from "./cover.css?inline";
 
 type Props = {
   show: boolean;
@@ -49,12 +50,3 @@ export default component$(
     );
   }
 );
-
-const styles = `
-  .dialog {
-  width: min(90vw, 600px);
-  aspect-ratio: 3/2;
-
-  transition: pointer-events 0s;
-}
-`;
