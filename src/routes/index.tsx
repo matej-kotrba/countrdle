@@ -564,7 +564,7 @@ export const CountryGuessArea = component$(
                   type="button"
                   class={`w-full px-2 py-2 hover:bg-slate-200 rounded-md duration-100 overflow-hidden text-ellipsis whitespace-nowrap
                   ${index === arrowSelectedCountry.value ? "bg-slate-200" : ""}`}
-                  onClick$={(e) => {
+                  onClick$={() => {
                     searchQuery.value = country.name.common;
                     filterSearchCountries(country.name.common);
                   }}
