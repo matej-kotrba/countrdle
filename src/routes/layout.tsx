@@ -1,6 +1,7 @@
-import { component$, Slot } from "@builder.io/qwik";
+import { component$, Slot, useVisibleTask$ } from "@builder.io/qwik";
 import type { RequestHandler } from "@builder.io/qwik-city";
 import "@fontsource-variable/comfortaa/wght.css";
+import { polyfillCountryFlagEmojis } from "country-flag-emoji-polyfill";
 
 export const onGet: RequestHandler = async ({ cacheControl }) => {
   // Control caching for this request for best performance and to reduce hosting costs:
@@ -14,6 +15,10 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
 };
 
 export default component$(() => {
+  // eslint-disable-next-line qwik/no-use-visible-task
+  useVisibleTask$(() => {
+    polyfillCountryFlagEmojis();
+  });
   return (
     <>
       <main class="container mx-auto">

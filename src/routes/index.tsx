@@ -6,6 +6,7 @@ import {
   type QRL,
   useSignal,
   useStylesScoped$,
+  useVisibleTask$,
 } from "@builder.io/qwik";
 
 import styles from "./styles.css?inline";
@@ -252,6 +253,7 @@ export default component$(() => {
     countriesStore.guessedCountries = [];
     countriesStore.countryToGuess = newCountry;
     countriesStore.guessedCorrectly = false;
+    countriesStore.showedClues = ["area"];
   });
 
   useTask$(async ({ cleanup }) => {
@@ -270,6 +272,10 @@ export default component$(() => {
       return a.name.common.localeCompare(b.name.common);
     });
     filterCountryList("");
+  });
+
+  // eslint-disable-next-line qwik/no-use-visible-task
+  useVisibleTask$(() => {
     setNewCountryToGuess("");
   });
 
@@ -289,7 +295,7 @@ export default component$(() => {
             : ""
         }
       />
-      <h3 class="text-center text-4xl uppercase font-bold tracking-widest mb-12">
+      <h3 class="text-center text-4xl uppercase font-bold tracking-widest mb-12 mt-12">
         Countrdle
       </h3>
       {/* xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7
@@ -300,7 +306,7 @@ export default component$(() => {
           onHoverTitle="The size of the country in km²"
           value={
             countriesStore.showedClues.includes("area")
-              ? String(countriesStore.countryToGuess?.area) + " km²"
+              ? countriesStore.countryToGuess?.area.toLocaleString() + " km²"
               : "?"
           }
         >
@@ -315,7 +321,7 @@ export default component$(() => {
           onHoverTitle="The population of the country"
           value={
             countriesStore.showedClues.includes("population")
-              ? String(countriesStore.countryToGuess?.population)
+              ? countriesStore.countryToGuess?.population.toLocaleString()
               : "?"
           }
         >

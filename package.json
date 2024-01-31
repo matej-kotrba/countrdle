@@ -44,6 +44,7 @@
     "vite-tsconfig-paths": "^4.2.1"
   },
   "dependencies": {
-    "@fontsource-variable/comfortaa": "^5.0.18"
+    "@fontsource-variable/comfortaa": "^5.0.18",
+    "country-flag-emoji-polyfill": "^0.1.8"
   }
 }
